@@ -1,27 +1,125 @@
 from app.schemas.user import (
     UserCreate,
     UserLogin,
+    UserUpdate,
     UserResponse,
     TokenResponse,
 )
-
+from app.schemas.university import (
+    UniversityProfileResponse,
+    SchoolResponse,
+    DepartmentCreate,
+    DepartmentResponse,
+    ProgramCreate,
+    ProgramResponse,
+    AcademicSessionResponse,
+    SemesterResponse,
+    SectionResponse,
+)
+from app.schemas.student import (
+    StudentCreate,
+    StudentUpdate,
+    StudentResponse,
+    BulkImportResult,
+)
+from app.schemas.faculty import (
+    FacultyCreate,
+    FacultyUpdate,
+    FacultyResponse,
+)
 from app.schemas.project import (
     ProjectCreate,
+    ProjectUpdate,
     ProjectResponse,
+    ProjectMemberSchema,
+    ProjectMilestoneSchema,
 )
-
 from app.schemas.task import (
     TaskCreate,
+    TaskUpdate,
     TaskResponse,
+    TaskCommentCreate,
+    TaskCommentResponse,
+    KanbanBoardResponse,
+)
+from app.schemas.agile import (
+    SprintCreate,
+    SprintUpdate,
+    SprintResponse,
+    UserStoryCreate,
+    UserStoryResponse,
+)
+from app.schemas.submission import (
+    SubmissionCreate,
+    SubmissionResponse,
+    EvaluationCreate,
+    EvaluationResponse,
+)
+from app.schemas.collaboration import (
+    DiscussionCreate,
+    DiscussionResponse,
+    DiscussionReplyCreate,
+    DiscussionReplyResponse,
+    MeetingCreate,
+    MeetingResponse,
+    AnnouncementCreate,
+    AnnouncementResponse,
+)
+from app.schemas.notification import (
+    NotificationResponse,
+    ActivityLogResponse,
 )
 
 __all__ = [
     "UserCreate",
     "UserLogin",
+    "UserUpdate",
     "UserResponse",
     "TokenResponse",
+    "UniversityProfileResponse",
+    "SchoolResponse",
+    "DepartmentCreate",
+    "DepartmentResponse",
+    "ProgramCreate",
+    "ProgramResponse",
+    "AcademicSessionResponse",
+    "SemesterResponse",
+    "SectionResponse",
+    "StudentCreate",
+    "StudentUpdate",
+    "StudentResponse",
+    "BulkImportResult",
+    "FacultyCreate",
+    "FacultyUpdate",
+    "FacultyResponse",
     "ProjectCreate",
+    "ProjectUpdate",
     "ProjectResponse",
+    "ProjectMemberSchema",
+    "ProjectMilestoneSchema",
     "TaskCreate",
+    "TaskUpdate",
     "TaskResponse",
+    "TaskCommentCreate",
+    "TaskCommentResponse",
+    "KanbanBoardResponse",
+    "SprintCreate",
+    "SprintUpdate",
+    "SprintResponse",
+    "UserStoryCreate",
+    "UserStoryResponse",
+    "SubmissionCreate",
+    "SubmissionResponse",
+    "EvaluationCreate",
+    "EvaluationResponse",
+    "DiscussionCreate",
+    "DiscussionResponse",
+    "DiscussionReplyCreate",
+    "DiscussionReplyResponse",
+    "MeetingCreate",
+    "MeetingResponse",
+    "AnnouncementCreate",
+    "AnnouncementResponse",
+    "NotificationResponse",
+    "ActivityLogResponse",
 ]

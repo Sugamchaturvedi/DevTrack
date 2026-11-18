@@ -1,15 +1,24 @@
-from pydantic_settings import BaseSettings
+from typing import List
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    app_name: str = "DevTrack API"
-    database_url: str = "postgresql://devtrack:devtrack@localhost:5432/devtrack"
+    app_name: str = "DevTrack — University Enterprise PMS"
+    app_version: str = "2.0.0"
+    database_url: str = "postgresql://devtrack:devtrack@127.0.0.1:5433/devtrack"
     secret_key: str = "devtrack-super-secret-key-change-this"
     algorithm: str = "HS256"
-    access_token_expire_minutes: int = 60
+    access_token_expire_minutes: int = 1440
+    refresh_token_expire_days: int = 7
+    environment: str = "development"
+    upload_dir: str = "uploads"
+    max_upload_size_mb: int = 25
 
-    class Config:
-        env_file = ".env"
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
 
 
 settings = Settings()

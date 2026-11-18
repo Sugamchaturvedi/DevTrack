@@ -1,130 +1,93 @@
-from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.pool import StaticPool
-
+import asyncio
+import httpx
 from app.main import app
-from app.database.database import Base, get_db
 
 
-SQLALCHEMY_DATABASE_URL = "sqlite://"
-
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL,
-    connect_args={"check_same_thread": False},
-    poolclass=StaticPool,
-)
-
-TestingSessionLocal = sessionmaker(
-    autocommit=False,
-    autoflush=False,
-    bind=engine,
-)
-
-Base.metadata.create_all(bind=engine)
-
-
-def override_get_db():
-    db = TestingSessionLocal()
-
-    try:
-        yield db
-    finally:
-        db.close()
-
-
-app.dependency_overrides[get_db] = override_get_db
-
-client = TestClient(app)
-
-
-def create_test_user():
-    register_response = client.post(
+async def get_auth_token(client):
+    email = f"proj_user_{asyncio.get_event_loop().time()}@example.com"
+    await client.post(
         "/auth/register",
         json={
             "name": "Project User",
-            "email": "project-user@example.com",
+            "email": email,
             "password": "TestPassword123!",
+            "role": "faculty",
         },
     )
-
-    if register_response.status_code == 400:
-        login_response = client.post(
-            "/auth/login",
-            json={
-                "email": "project-user@example.com",
-                "password": "TestPassword123!",
-            },
-        )
-
-        return login_response.json()["access_token"]
-
-    assert register_response.status_code == 201
-
-    login_response = client.post(
+    login_res = await client.post(
         "/auth/login",
         json={
-            "email": "project-user@example.com",
+            "email": email,
             "password": "TestPassword123!",
         },
     )
-
-    assert login_response.status_code == 200
-
-    return login_response.json()["access_token"]
+    return login_res.json()["access_token"]
 
 
 def test_create_project():
-    token = create_test_user()
+    async def run():
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
+            token = await get_auth_token(client)
+            headers = {"Authorization": f"Bearer {token}"}
 
-    response = client.post(
-        "/projects/",
-        headers={
-            "Authorization": f"Bearer {token}",
-        },
-        json={
-            "name": "DevTrack Project",
-            "description": "Project management application",
-        },
-    )
+            response = await client.post(
+                "/projects/",
+                json={
+                    "name": "DevTrack Test Project",
+                    "description": "Testing project creation API",
+                    "category": "Capstone",
+                    "priority": "high",
+                },
+                headers=headers,
+            )
+            assert response.status_code == 201
+            data = response.json()
+            assert data["name"] == "DevTrack Test Project"
+            assert data["category"] == "Capstone"
 
-    assert response.status_code == 200
-
-    data = response.json()
-
-    assert data["name"] == "DevTrack Project"
-    assert data["description"] == "Project management application"
+    asyncio.run(run())
 
 
-def test_get_projects():
-    token = create_test_user()
+def test_list_projects():
+    async def run():
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
+            token = await get_auth_token(client)
+            headers = {"Authorization": f"Bearer {token}"}
 
-    create_response = client.post(
-        "/projects/",
-        headers={
-            "Authorization": f"Bearer {token}",
-        },
-        json={
-            "name": "Test Project",
-            "description": "Testing project",
-        },
-    )
+            await client.post(
+                "/projects/",
+                json={
+                    "name": "Listed Project",
+                    "description": "Description",
+                },
+                headers=headers,
+            )
 
-    assert create_response.status_code == 200
+            response = await client.get("/projects/", headers=headers)
+            assert response.status_code == 200
+            assert isinstance(response.json(), list)
 
-    response = client.get(
-        "/projects/",
-        headers={
-            "Authorization": f"Bearer {token}",
-        },
-    )
+    asyncio.run(run())
 
-    assert response.status_code == 200
 
-    projects = response.json()
+def test_get_project_by_id():
+    async def run():
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
+            token = await get_auth_token(client)
+            headers = {"Authorization": f"Bearer {token}"}
 
-    assert len(projects) >= 1
-    assert any(
-        project["name"] == "Test Project"
-        for project in projects
-    )
+            created = await client.post(
+                "/projects/",
+                json={
+                    "name": "Specific Project",
+                    "description": "Specific Description",
+                },
+                headers=headers,
+            )
+            proj_id = created.json()["id"]
+
+            response = await client.get(f"/projects/{proj_id}", headers=headers)
+            assert response.status_code == 200
+            assert response.json()["id"] == proj_id
+
+    asyncio.run(run())

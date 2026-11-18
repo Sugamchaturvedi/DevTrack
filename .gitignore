@@ -16,6 +16,7 @@ env/
 *.db
 *.sqlite
 *.sqlite3
+*.dump
 
 # Node
 node_modules/
@@ -25,7 +26,8 @@ frontend/dist/
 *.log
 
 # IDE
-.vscode/
+.vscode/*
+!.vscode/settings.json
 .idea/
 
 # OS

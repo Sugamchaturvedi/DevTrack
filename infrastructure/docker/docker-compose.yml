@@ -1,0 +1,40 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: devtrack-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: devtrack
+      POSTGRES_USER: devtrack
+      POSTGRES_PASSWORD: devtrack
+    ports:
+      - "5433:5432"
+    volumes:
+      - devtrack_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U devtrack -d devtrack"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ../..
+      dockerfile: backend/Dockerfile
+    container_name: devtrack-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://devtrack:devtrack@postgres:5432/devtrack
+      SECRET_KEY: devtrack-production-secret-key-change-this
+      ENVIRONMENT: production
+    ports:
+      - "8000:8000"
+    volumes:
+      - devtrack_uploads:/app/backend/uploads
+
+volumes:
+  devtrack_postgres_data:
+  devtrack_uploads:

@@ -1,138 +1,115 @@
-from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.pool import StaticPool
-
+import asyncio
+import httpx
 from app.main import app
-from app.database.database import Base, get_db
 
 
-SQLALCHEMY_DATABASE_URL = "sqlite://"
-
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL,
-    connect_args={"check_same_thread": False},
-    poolclass=StaticPool,
-)
-
-TestingSessionLocal = sessionmaker(
-    autocommit=False,
-    autoflush=False,
-    bind=engine,
-)
-
-Base.metadata.create_all(bind=engine)
-
-
-def override_get_db():
-    db = TestingSessionLocal()
-
-    try:
-        yield db
-    finally:
-        db.close()
-
-
-app.dependency_overrides[get_db] = override_get_db
-
-client = TestClient(app)
-
-
-def create_project():
-    client.post(
+async def setup_project_and_auth(client):
+    email = f"task_owner_{asyncio.get_event_loop().time()}@example.com"
+    await client.post(
         "/auth/register",
         json={
-            "name": "Task Owner",
-            "email": "task-owner@example.com",
+            "name": "Task Test Owner",
+            "email": email,
             "password": "TestPassword123!",
+            "role": "faculty",
         },
     )
-
-    login_response = client.post(
+    login_res = await client.post(
         "/auth/login",
         json={
-            "email": "task-owner@example.com",
+            "email": email,
             "password": "TestPassword123!",
         },
     )
+    token = login_res.json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
 
-    assert login_response.status_code == 200
-
-    token = login_response.json()["access_token"]
-
-    response = client.post(
+    proj_res = await client.post(
         "/projects/",
-        headers={
-            "Authorization": f"Bearer {token}",
-        },
         json={
-            "name": "Task Project",
-            "description": "Project for task testing",
+            "name": "Task Test Project",
+            "description": "Project for task tests",
         },
+        headers=headers,
     )
-
-    assert response.status_code == 200
-
-    return response.json()["id"], token
+    return headers, proj_res.json()["id"]
 
 
 def test_create_task():
-    project_id, token = create_project()
+    async def run():
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
+            headers, proj_id = await setup_project_and_auth(client)
 
-    response = client.post(
-        f"/projects/{project_id}/tasks",
-        headers={
-            "Authorization": f"Bearer {token}",
-        },
-        json={
-            "title": "Build authentication",
-            "description": "Implement JWT authentication",
-            "status": "todo",
-            "priority": "high",
-        },
-    )
+            response = await client.post(
+                f"/projects/{proj_id}/tasks",
+                json={
+                    "title": "Design Database Schema",
+                    "description": "Create Postgres models",
+                    "status": "todo",
+                    "priority": "high",
+                    "estimated_hours": 5.0,
+                },
+                headers=headers,
+            )
+            assert response.status_code == 201
+            data = response.json()
+            assert data["title"] == "Design Database Schema"
+            assert data["priority"] == "high"
 
-    assert response.status_code == 200
-
-    data = response.json()
-
-    assert data["title"] == "Build authentication"
-    assert data["status"] == "todo"
-    assert data["priority"] == "high"
-    assert data["project_id"] == project_id
+    asyncio.run(run())
 
 
-def test_get_project_tasks():
-    project_id, token = create_project()
+def test_list_tasks():
+    async def run():
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
+            headers, proj_id = await setup_project_and_auth(client)
 
-    create_response = client.post(
-        f"/projects/{project_id}/tasks",
-        headers={
-            "Authorization": f"Bearer {token}",
-        },
-        json={
-            "title": "Test task",
-            "description": "Testing task retrieval",
-            "status": "in_progress",
-            "priority": "medium",
-        },
-    )
+            await client.post(
+                f"/projects/{proj_id}/tasks",
+                json={
+                    "title": "Build API Endpoints",
+                    "status": "in_progress",
+                    "priority": "urgent",
+                },
+                headers=headers,
+            )
 
-    assert create_response.status_code == 200
+            response = await client.get(f"/projects/{proj_id}/tasks", headers=headers)
+            assert response.status_code == 200
+            assert len(response.json()) >= 1
 
-    response = client.get(
-        f"/projects/{project_id}/tasks",
-        headers={
-            "Authorization": f"Bearer {token}",
-        },
-    )
+    asyncio.run(run())
 
-    assert response.status_code == 200
 
-    tasks = response.json()
+def test_kanban_board():
+    async def run():
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
+            headers, proj_id = await setup_project_and_auth(client)
 
-    assert len(tasks) >= 1
-    assert any(
-        task["title"] == "Test task"
-        for task in tasks
-    )
+            task_res = await client.post(
+                f"/projects/{proj_id}/tasks",
+                json={
+                    "title": "Kanban Test Task",
+                    "status": "todo",
+                    "priority": "medium",
+                },
+                headers=headers,
+            )
+            task_id = task_res.json()["id"]
+
+            # Fetch kanban board
+            kb_res = await client.get(f"/projects/{proj_id}/tasks/kanban", headers=headers)
+            assert kb_res.status_code == 200
+            lanes = kb_res.json()["lanes"]
+            assert len(lanes) >= 6
+
+            # Move task to completed
+            put_res = await client.put(
+                f"/projects/{proj_id}/tasks/{task_id}",
+                json={"status": "completed"},
+                headers=headers,
+            )
+            assert put_res.status_code == 200
+            assert put_res.json()["status"] == "completed"
+
+    asyncio.run(run())

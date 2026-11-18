@@ -1,0 +1,8 @@
+{
+  "liveServer.settings.root": "/frontend",
+  "liveServer.settings.file": "devtrack.html",
+  "liveServer.settings.port": 5501,
+  "liveServer.settings.wait": 100,
+  "liveServer.settings.donotShowInfoMsg": true,
+  "liveServer.settings.donotVerifyTags": true
+}
