@@ -1,121 +1,25 @@
 {
-  "version": 2,
   "rewrites": [
-    {
-      "source": "/auth/(.*)",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/auth",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/pm/(.*)",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/pm",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/projects/(.*)",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/projects",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/tasks/(.*)",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/tasks",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/analytics/(.*)",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/analytics",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/users/(.*)",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/users",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/agile/(.*)",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/agile",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/submissions/(.*)",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/submissions",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/announcements/(.*)",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/announcements",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/wiki/(.*)",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/wiki",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/departments/(.*)",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/departments",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/rubrics/(.*)",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/rubrics",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/api",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/health",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/docs",
-      "destination": "/api/index.py"
-    },
-    {
-      "source": "/openapi.json",
-      "destination": "/api/index.py"
-    }
+    { "source": "/api/(.*)", "destination": "/api/index.py" },
+    { "source": "/auth/(.*)", "destination": "/api/index.py" },
+    { "source": "/users/(.*)", "destination": "/api/index.py" },
+    { "source": "/university/(.*)", "destination": "/api/index.py" },
+    { "source": "/projects/(.*)", "destination": "/api/index.py" },
+    { "source": "/tasks/(.*)", "destination": "/api/index.py" },
+    { "source": "/agile/(.*)", "destination": "/api/index.py" },
+    { "source": "/pm/(.*)", "destination": "/api/index.py" },
+    { "source": "/submissions/(.*)", "destination": "/api/index.py" },
+    { "source": "/collaboration/(.*)", "destination": "/api/index.py" },
+    { "source": "/analytics/(.*)", "destination": "/api/index.py" },
+    { "source": "/announcements/(.*)", "destination": "/api/index.py" },
+    { "source": "/wiki/(.*)", "destination": "/api/index.py" },
+    { "source": "/rubrics/(.*)", "destination": "/api/index.py" },
+    { "source": "/health", "destination": "/api/index.py" },
+    { "source": "/docs", "destination": "/api/index.py" },
+    { "source": "/openapi.json", "destination": "/api/index.py" },
+    { "source": "/css/(.*)", "destination": "/public/css/$1" },
+    { "source": "/js/(.*)", "destination": "/public/js/$1" },
+    { "source": "/devtrack.html", "destination": "/public/devtrack.html" },
+    { "source": "/", "destination": "/public/devtrack.html" }
   ]
 }
