@@ -9,6 +9,20 @@ db_url = settings.database_url
 if db_url.startswith("postgres://"):
     db_url = db_url.replace("postgres://", "postgresql://", 1)
 
+# In AWS Lambda / Vercel Serverless, direct Supabase endpoints (db.*.supabase.co) resolve
+# only to IPv6 which serverless cannot route. Route to Supabase's IPv4 shared pooler instead:
+if "db.rdawwkebctctlhbigzfo.supabase.co" in db_url:
+    db_url = db_url.replace(
+        "db.rdawwkebctctlhbigzfo.supabase.co",
+        "aws-1-ap-south-1.pooler.supabase.com"
+    )
+    if "devtrack_app" in db_url and "devtrack_app.rdawwkebctctlhbigzfo" not in db_url:
+        db_url = db_url.replace("devtrack_app", "devtrack_app.rdawwkebctctlhbigzfo", 1)
+
+if "supabase" in db_url and "sslmode" not in db_url:
+    separator = "&" if "?" in db_url else "?"
+    db_url = f"{db_url}{separator}sslmode=require"
+
 is_sqlite = "sqlite" in db_url
 
 if is_sqlite:
