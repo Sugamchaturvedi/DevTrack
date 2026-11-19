@@ -1,34 +1,22 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "api/index.py",
-      "use": "@vercel/python"
-    },
-    {
-      "src": "frontend/**",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    { "src": "/api/(.*)", "dest": "/api/index.py" },
-    { "src": "/auth/(.*)", "dest": "/api/index.py" },
-    { "src": "/users/(.*)", "dest": "/api/index.py" },
-    { "src": "/university/(.*)", "dest": "/api/index.py" },
-    { "src": "/projects/(.*)", "dest": "/api/index.py" },
-    { "src": "/tasks/(.*)", "dest": "/api/index.py" },
-    { "src": "/agile/(.*)", "dest": "/api/index.py" },
-    { "src": "/pm/(.*)", "dest": "/api/index.py" },
-    { "src": "/submissions/(.*)", "dest": "/api/index.py" },
-    { "src": "/collaboration/(.*)", "dest": "/api/index.py" },
-    { "src": "/analytics/(.*)", "dest": "/api/index.py" },
-    { "src": "/health", "dest": "/api/index.py" },
-    { "src": "/docs", "dest": "/api/index.py" },
-    { "src": "/openapi.json", "dest": "/api/index.py" },
-    { "src": "/css/(.*)", "dest": "/frontend/css/$1" },
-    { "src": "/js/(.*)", "dest": "/frontend/js/$1" },
-    { "src": "/devtrack.html", "dest": "/frontend/devtrack.html" },
-    { "src": "/", "dest": "/frontend/devtrack.html" },
-    { "src": "/(.*)", "dest": "/frontend/$1" }
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index.py" },
+    { "source": "/auth/(.*)", "destination": "/api/index.py" },
+    { "source": "/users/(.*)", "destination": "/api/index.py" },
+    { "source": "/university/(.*)", "destination": "/api/index.py" },
+    { "source": "/projects/(.*)", "destination": "/api/index.py" },
+    { "source": "/tasks/(.*)", "destination": "/api/index.py" },
+    { "source": "/agile/(.*)", "destination": "/api/index.py" },
+    { "source": "/pm/(.*)", "destination": "/api/index.py" },
+    { "source": "/submissions/(.*)", "destination": "/api/index.py" },
+    { "source": "/collaboration/(.*)", "destination": "/api/index.py" },
+    { "source": "/analytics/(.*)", "destination": "/api/index.py" },
+    { "source": "/health", "destination": "/api/index.py" },
+    { "source": "/docs", "destination": "/api/index.py" },
+    { "source": "/openapi.json", "destination": "/api/index.py" },
+    { "source": "/css/(.*)", "destination": "/frontend/css/$1" },
+    { "source": "/js/(.*)", "destination": "/frontend/js/$1" },
+    { "source": "/devtrack.html", "destination": "/frontend/devtrack.html" },
+    { "source": "/", "destination": "/frontend/devtrack.html" }
   ]
 }
