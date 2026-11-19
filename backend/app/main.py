@@ -21,17 +21,17 @@ from app.routes import (
     users,
 )
 
-# Ensure database tables exist
-try:
-    Base.metadata.create_all(bind=engine)
-except Exception as e:
-    print(f"Database init warning (non-fatal in serverless): {e}")
+app = FastAPI()
+app.title = settings.app_name
+app.description = "Enterprise University Project Management System — Scalable academic and agile project platform"
+app.version = settings.app_version
 
-app = FastAPI(
-    title=settings.app_name,
-    description="Enterprise University Project Management System — Scalable academic and agile project platform",
-    version=settings.app_version,
-)
+# Ensure database tables exist if configured
+if os.getenv("RUN_DB_MIGRATIONS", "false").lower() == "true":
+    try:
+        Base.metadata.create_all(bind=engine)
+    except Exception as e:
+        print(f"Database init warning: {e}")
 
 app.add_middleware(
     CORSMiddleware,

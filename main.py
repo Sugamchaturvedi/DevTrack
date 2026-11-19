@@ -3,6 +3,10 @@ import sys
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+# Top-level ASGI FastAPI instance for Vercel discovery
+app = FastAPI()
+
+# Add backend directory to module search path
 root_dir = os.path.dirname(os.path.abspath(__file__))
 backend_dir = os.path.join(root_dir, "backend")
 if backend_dir not in sys.path:
@@ -11,9 +15,6 @@ if root_dir not in sys.path:
     sys.path.insert(0, root_dir)
 
 from app.core.config import settings
-from app.database.database import Base, engine
-import app.database.models
-
 from app.routes import (
     agile,
     analytics,
@@ -27,17 +28,9 @@ from app.routes import (
     users,
 )
 
-# Ensure database tables exist
-try:
-    Base.metadata.create_all(bind=engine)
-except Exception as e:
-    print(f"Database init warning (non-fatal in serverless): {e}")
-
-app = FastAPI(
-    title=settings.app_name,
-    description="Enterprise University Project Management System",
-    version=settings.app_version,
-)
+app.title = settings.app_name
+app.description = "Enterprise University Project Management System"
+app.version = settings.app_version
 
 app.add_middleware(
     CORSMiddleware,
@@ -47,7 +40,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include All Functional Routers
+# Mount all core routes
 app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(university.router)
