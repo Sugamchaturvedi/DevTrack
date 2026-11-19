@@ -1,7 +1,7 @@
 import sys
 import os
+from fastapi import FastAPI
 
-# Add root and backend directory to path
 root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 backend_dir = os.path.join(root_dir, "backend")
 
