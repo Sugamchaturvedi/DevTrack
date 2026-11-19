@@ -53,10 +53,18 @@ app.include_router(submissions.router)
 app.include_router(collaboration.router)
 app.include_router(analytics.router)
 
-# Mount Uploads directory
-upload_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", settings.upload_dir))
-os.makedirs(upload_path, exist_ok=True)
-app.mount("/uploads", StaticFiles(directory=upload_path), name="uploads")
+# Mount Uploads directory safely in serverless environments
+is_serverless = bool(
+    os.getenv("VERCEL")
+    or os.getenv("AWS_LAMBDA_FUNCTION_NAME")
+    or os.getenv("LAMBDA_TASK_ROOT")
+)
+upload_path = "/tmp/uploads" if is_serverless else os.path.abspath(os.path.join(os.path.dirname(__file__), "..", settings.upload_dir))
+try:
+    os.makedirs(upload_path, exist_ok=True)
+    app.mount("/uploads", StaticFiles(directory=upload_path), name="uploads")
+except Exception as e:
+    print(f"Upload mount warning: {e}")
 
 @app.get("/health")
 @app.get("/api/health")
