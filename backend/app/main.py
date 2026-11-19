@@ -77,6 +77,43 @@ def health():
     }
 
 
+@app.get("/api/db-diagnostics")
+def db_diagnostics():
+    import traceback
+    from urllib.parse import urlparse
+    parsed = urlparse(settings.database_url)
+    info = {
+        "scheme": parsed.scheme,
+        "hostname": parsed.hostname,
+        "port": parsed.port,
+        "username": parsed.username,
+        "database": parsed.path,
+    }
+    try:
+        from app.database.database import engine, SessionLocal
+        from app.models.user import User
+        from sqlalchemy import text
+        with engine.connect() as conn:
+            val = conn.execute(text("SELECT 1")).scalar()
+        db = SessionLocal()
+        user_count = db.query(User).count()
+        db.close()
+        return {
+            "status": "connected",
+            "select_1": val,
+            "user_count": user_count,
+            "url_info": info,
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "error_type": type(e).__name__,
+            "error_message": str(e),
+            "traceback": traceback.format_exc(),
+            "url_info": info,
+        }
+
+
 @app.get("/api")
 def api_root():
     return {

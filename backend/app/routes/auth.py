@@ -78,11 +78,18 @@ def login(
     user_data: UserLogin,
     db: Session = Depends(get_db),
 ):
-    user = (
-        db.query(User)
-        .filter(User.email == user_data.email)
-        .first()
-    )
+    try:
+        user = (
+            db.query(User)
+            .filter(User.email == user_data.email)
+            .first()
+        )
+    except Exception as e:
+        import traceback
+        raise HTTPException(
+            status_code=500,
+            detail=f"Database login error: {type(e).__name__} - {str(e)}\n{traceback.format_exc()}",
+        )
 
     if not user:
         raise HTTPException(
