@@ -1,6 +1,7 @@
 import os
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.pool import NullPool
 from app.core.config import settings
 
 db_url = settings.database_url
@@ -61,9 +62,7 @@ else:
     if is_serverless:
         engine = create_engine(
             db_url,
-            pool_size=5,
-            max_overflow=2,
-            pool_recycle=300,
+            poolclass=NullPool,
             pool_pre_ping=True,
         )
     else:

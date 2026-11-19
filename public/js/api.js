@@ -39,12 +39,17 @@ const API = {
       headers["Content-Type"] = "application/json";
     }
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), options.timeout || 12000);
+
     try {
       const response = await fetch(url, {
         method: options.method || "GET",
         headers,
         body: options.body,
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
 
       if (response.status === 401) {
         // Token expired or invalid
@@ -81,6 +86,10 @@ const API = {
 
       return data;
     } catch (err) {
+      clearTimeout(timeoutId);
+      if (err.name === "AbortError") {
+        throw new Error(`Request timed out on ${endpoint}`);
+      }
       console.error(`API Error on ${endpoint}:`, err);
       throw err;
     }
