@@ -1,24 +1,66 @@
+import os
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import declarative_base, sessionmaker
 from app.core.config import settings
 
-is_sqlite = "sqlite" in settings.database_url
+db_url = settings.database_url
+
+# Standardize postgres protocol
+if db_url.startswith("postgres://"):
+    db_url = db_url.replace("postgres://", "postgresql://", 1)
+
+is_sqlite = "sqlite" in db_url
 
 if is_sqlite:
     engine = create_engine(
-        settings.database_url,
+        db_url,
         connect_args={"check_same_thread": False},
         pool_pre_ping=True,
     )
 else:
-    engine = create_engine(
-        settings.database_url,
-        pool_size=20,
-        max_overflow=10,
-        pool_timeout=30,
-        pool_recycle=1800,
-        pool_pre_ping=True,
+    # Graceful fallback between psycopg (v3) and psycopg2
+    if "postgresql+psycopg://" in db_url:
+        try:
+            import psycopg  # noqa: F401
+        except ImportError:
+            try:
+                import psycopg2  # noqa: F401
+                db_url = db_url.replace("postgresql+psycopg://", "postgresql+psycopg2://", 1)
+            except ImportError:
+                pass
+    elif "postgresql+psycopg2://" in db_url:
+        try:
+            import psycopg2  # noqa: F401
+        except ImportError:
+            try:
+                import psycopg  # noqa: F401
+                db_url = db_url.replace("postgresql+psycopg2://", "postgresql+psycopg://", 1)
+            except ImportError:
+                pass
+
+    is_serverless = bool(
+        os.getenv("VERCEL")
+        or os.getenv("AWS_LAMBDA_FUNCTION_NAME")
+        or os.getenv("LAMBDA_TASK_ROOT")
     )
+
+    if is_serverless:
+        engine = create_engine(
+            db_url,
+            pool_size=5,
+            max_overflow=2,
+            pool_recycle=300,
+            pool_pre_ping=True,
+        )
+    else:
+        engine = create_engine(
+            db_url,
+            pool_size=20,
+            max_overflow=10,
+            pool_timeout=30,
+            pool_recycle=1800,
+            pool_pre_ping=True,
+        )
 
 SessionLocal = sessionmaker(
     autocommit=False,
