@@ -114,8 +114,19 @@ def list_projects(
     if current_user.role in [UserRole.SUPER_ADMIN.value, UserRole.UNIVERSITY_ADMIN.value]:
         pass
     elif current_user.role in [UserRole.HOD.value, UserRole.REVIEWER.value, UserRole.FACULTY.value]:
+        from sqlalchemy import or_
+        member_proj_ids = [m.project_id for m in db.query(ProjectMember.project_id).filter(ProjectMember.user_id == current_user.id).all()]
+        access_conditions = [
+            Project.owner_id == current_user.id,
+            Project.faculty_mentor_id == current_user.id,
+            Project.project_manager_id == current_user.id,
+        ]
+        if member_proj_ids:
+            access_conditions.append(Project.id.in_(member_proj_ids))
         if current_user.department_id:
-            query = query.filter((Project.department_id == current_user.department_id) | (Project.department_id.is_(None)))
+            access_conditions.append(Project.department_id == current_user.department_id)
+            access_conditions.append(Project.department_id.is_(None))
+        query = query.filter(or_(*access_conditions))
     elif not all_projects:
         # User sees projects they own, mentor, manage, or are a member of
         member_proj_ids = [m.project_id for m in db.query(ProjectMember.project_id).filter(ProjectMember.user_id == current_user.id).all()]

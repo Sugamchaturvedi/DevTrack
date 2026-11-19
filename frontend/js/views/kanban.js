@@ -91,6 +91,14 @@ const KanbanView = {
       }
     } catch (e) {
       UI.error(e.message);
+      const container = document.getElementById("kanban-board-container");
+      if (container) {
+        container.innerHTML = `<div style="padding: 2.5rem; text-align: center; color: var(--danger); background: var(--bg-surface); border-radius: var(--radius-lg); border: 1px dashed var(--danger);">
+          <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚠️</div>
+          <p>Failed to load Kanban Board: ${UI.escapeHtml(e.message)}</p>
+          <button class="btn btn-secondary btn-sm" style="margin-top: 0.75rem;" onclick="KanbanView.initProjectSelector()">Retry</button>
+        </div>`;
+      }
     }
   },
 
@@ -254,6 +262,14 @@ const KanbanView = {
       await this.loadBoard(this.activeProjectId, "kanban-board-container");
     } catch (e) {
       UI.error(e.message);
+      const container = document.getElementById("kanban-board-container");
+      if (container) {
+        container.innerHTML = `<div style="padding: 2.5rem; text-align: center; color: var(--danger); background: var(--bg-surface); border-radius: var(--radius-lg); border: 1px dashed var(--danger);">
+          <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚠️</div>
+          <p>Failed to load Kanban Board: ${UI.escapeHtml(e.message)}</p>
+          <button class="btn btn-secondary btn-sm" style="margin-top: 0.75rem;" onclick="KanbanView.initProjectSelector()">Retry</button>
+        </div>`;
+      }
     }
   },
 };

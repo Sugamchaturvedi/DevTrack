@@ -22,7 +22,10 @@ from app.routes import (
 )
 
 # Ensure database tables exist
-Base.metadata.create_all(bind=engine)
+try:
+    Base.metadata.create_all(bind=engine)
+except Exception as e:
+    print(f"Database init warning (non-fatal in serverless): {e}")
 
 app = FastAPI(
     title=settings.app_name,

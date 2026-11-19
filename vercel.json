@@ -1,0 +1,34 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/index.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "frontend/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/index.py" },
+    { "src": "/auth/(.*)", "dest": "/api/index.py" },
+    { "src": "/users/(.*)", "dest": "/api/index.py" },
+    { "src": "/university/(.*)", "dest": "/api/index.py" },
+    { "src": "/projects/(.*)", "dest": "/api/index.py" },
+    { "src": "/tasks/(.*)", "dest": "/api/index.py" },
+    { "src": "/agile/(.*)", "dest": "/api/index.py" },
+    { "src": "/pm/(.*)", "dest": "/api/index.py" },
+    { "src": "/submissions/(.*)", "dest": "/api/index.py" },
+    { "src": "/collaboration/(.*)", "dest": "/api/index.py" },
+    { "src": "/analytics/(.*)", "dest": "/api/index.py" },
+    { "src": "/health", "dest": "/api/index.py" },
+    { "src": "/docs", "dest": "/api/index.py" },
+    { "src": "/openapi.json", "dest": "/api/index.py" },
+    { "src": "/css/(.*)", "dest": "/frontend/css/$1" },
+    { "src": "/js/(.*)", "dest": "/frontend/js/$1" },
+    { "src": "/devtrack.html", "dest": "/frontend/devtrack.html" },
+    { "src": "/", "dest": "/frontend/devtrack.html" },
+    { "src": "/(.*)", "dest": "/frontend/$1" }
+  ]
+}

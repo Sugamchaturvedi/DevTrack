@@ -4,7 +4,8 @@
  */
 
 // In Live Server (e.g. port 5501 / 5500) or file://, direct API requests to FastAPI backend on :8000
-const isExternalPort = window.location.port && window.location.port !== "8000";
+const isLocalDevHost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+const isExternalPort = isLocalDevHost && window.location.port && window.location.port !== "8000";
 const isFileProtocol = window.location.protocol === "file:";
 const API_BASE = (isExternalPort || isFileProtocol)
   ? "http://127.0.0.1:8000" 

@@ -30,6 +30,12 @@ const App = {
     this.handleRoute();
   },
 
+  navigate(route) {
+    if (!route) return;
+    const cleanRoute = route.startsWith("#") ? route : `#/${route.replace(/^\//, "")}`;
+    window.location.hash = cleanRoute;
+  },
+
   async handleRoute() {
     const hash = window.location.hash || "#/dashboard";
     const appContainer = document.getElementById("app");
