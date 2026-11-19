@@ -25,8 +25,16 @@ router = APIRouter(
     tags=["Project Submissions & Evaluations"],
 )
 
-UPLOAD_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", settings.upload_dir))
-os.makedirs(UPLOAD_DIR, exist_ok=True)
+is_serverless = bool(
+    os.getenv("VERCEL")
+    or os.getenv("AWS_LAMBDA_FUNCTION_NAME")
+    or os.getenv("LAMBDA_TASK_ROOT")
+)
+UPLOAD_DIR = "/tmp/uploads" if is_serverless else os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", settings.upload_dir))
+try:
+    os.makedirs(UPLOAD_DIR, exist_ok=True)
+except Exception as e:
+    print(f"Submissions upload dir notice: {e}")
 
 ALLOWED_EXTENSIONS = {".pdf", ".doc", ".docx", ".zip", ".tar.gz", ".pptx", ".txt"}
 
