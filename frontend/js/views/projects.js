@@ -1,4 +1,4 @@
-﻿/**
+/**
  * DevTrack Projects List & Management View
  */
 

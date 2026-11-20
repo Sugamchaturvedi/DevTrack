@@ -43,7 +43,7 @@ const App = {
         if (searchInput) searchInput.focus();
       }
     });
-    
+
     // Check initial session
     const user = await Auth.checkAuth();
     if (!user && !window.location.hash.includes("register")) {
@@ -496,7 +496,7 @@ const App = {
       try {
         await IssuesView.openIssueDetailModal(q);
         return;
-      } catch (e) {}
+      } catch (e) { }
     }
 
     // Otherwise run global omni-search API
