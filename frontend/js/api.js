@@ -124,6 +124,34 @@ const API = {
   delete(endpoint) {
     return this.request(endpoint, { method: "DELETE" });
   },
+
+  async getProjects(forceRefresh = false) {
+    if (window.App && typeof window.App.getProjects === "function") {
+      return window.App.getProjects(forceRefresh);
+    }
+    const res = await this.get("/projects/");
+    return Array.isArray(res) ? res : (res && Array.isArray(res.items) ? res.items : []);
+  },
 };
 
 window.API = API;
+
+// Early registration of App project repository to prevent uninitialized view calls
+window.App = window.App || {};
+window.App._cachedProjects = null;
+window.App._cachedProjectsTime = 0;
+window.App.getProjects = async function(forceRefresh = false) {
+  const now = Date.now();
+  if (!forceRefresh && window.App._cachedProjects && (now - window.App._cachedProjectsTime < 30000)) {
+    return window.App._cachedProjects;
+  }
+  const res = await API.get("/projects/");
+  const projects = Array.isArray(res) ? res : (res && Array.isArray(res.items) ? res.items : []);
+  window.App._cachedProjects = projects;
+  window.App._cachedProjectsTime = now;
+  return projects;
+};
+window.App.invalidateProjectsCache = function() {
+  window.App._cachedProjects = null;
+  window.App._cachedProjectsTime = 0;
+};

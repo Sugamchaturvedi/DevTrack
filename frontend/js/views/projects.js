@@ -73,17 +73,17 @@ const ProjectsView = {
     await this.loadProjects();
   },
 
-  async loadProjects() {
+  async loadProjects(forceRefresh = false) {
     const tbody = document.getElementById("projects-table-body");
     try {
-      this.currentProjects = await App.getProjects();
+      this.currentProjects = await App.getProjects(forceRefresh);
       this.renderTable(this.currentProjects);
     } catch (e) {
       if (tbody) {
         tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 2.5rem; color: var(--danger);">
           <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">⚠️</div>
           <p style="margin-bottom: 0.75rem;">Failed to load projects: ${UI.escapeHtml(e.message)}</p>
-          <button class="btn btn-secondary btn-sm" onclick="ProjectsView.loadProjects()">🔄 Retry</button>
+          <button class="btn btn-secondary btn-sm" onclick="ProjectsView.loadProjects(true)">🔄 Retry</button>
         </td></tr>`;
       }
       UI.error("Failed to load projects: " + e.message);
@@ -229,7 +229,10 @@ const ProjectsView = {
       await API.post("/projects/", payload);
       UI.success("Project created successfully!");
       UI.closeModal();
-      await this.loadProjects();
+      if (window.App && typeof window.App.invalidateProjectsCache === "function") {
+        window.App.invalidateProjectsCache();
+      }
+      await this.loadProjects(true);
     } catch (err) {
       UI.error(err.message);
     }

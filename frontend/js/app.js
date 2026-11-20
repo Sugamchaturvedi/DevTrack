@@ -5,6 +5,29 @@
 
 const App = {
   currentRouteId: 0,
+  _cachedProjects: null,
+  _cachedProjectsTime: 0,
+
+  /**
+   * Centralized project repository provider with 30s in-memory caching
+   * Eliminates redundant N+1 fetches across sidebar view transitions
+   */
+  async getProjects(forceRefresh = false) {
+    const now = Date.now();
+    if (!forceRefresh && this._cachedProjects && (now - this._cachedProjectsTime < 30000)) {
+      return this._cachedProjects;
+    }
+    const res = await API.get("/projects/");
+    const projects = Array.isArray(res) ? res : (res && Array.isArray(res.items) ? res.items : []);
+    this._cachedProjects = projects;
+    this._cachedProjectsTime = now;
+    return projects;
+  },
+
+  invalidateProjectsCache() {
+    this._cachedProjects = null;
+    this._cachedProjectsTime = 0;
+  },
 
   async init() {
     UI.initTheme();
@@ -579,7 +602,7 @@ const App = {
   },
 };
 
-window.App = App;
+window.App = Object.assign(window.App || {}, App);
 
 document.addEventListener("DOMContentLoaded", () => {
   App.init();
