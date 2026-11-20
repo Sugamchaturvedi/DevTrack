@@ -25,7 +25,8 @@ const API = {
   },
 
   async request(endpoint, options = {}) {
-    const url = `${API_BASE}${endpoint}`;
+    const cleanEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+    const url = `${API_BASE}${cleanEndpoint}`;
     const headers = {
       ...(options.headers || {}),
     };
@@ -40,7 +41,7 @@ const API = {
     }
 
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), options.timeout || 12000);
+    const timeoutId = setTimeout(() => controller.abort(), options.timeout || 15000);
 
     try {
       const response = await fetch(url, {

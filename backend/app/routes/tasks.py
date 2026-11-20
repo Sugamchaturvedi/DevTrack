@@ -72,7 +72,7 @@ def get_user_project(
             detail="Project not found",
         )
 
-    # Check permission: owner, mentor, manager, member, or admin
+    # Check permission: owner, mentor, manager, member, faculty in dept, or admin
     is_owner = project.owner_id == current_user.id
     is_mentor = project.faculty_mentor_id == current_user.id
     is_manager = project.project_manager_id == current_user.id
@@ -81,8 +81,12 @@ def get_user_project(
         ProjectMember.project_id == project_id,
         ProjectMember.user_id == current_user.id,
     ).first() is not None
+    is_faculty_in_dept = (
+        current_user.role in [UserRole.FACULTY.value, UserRole.REVIEWER.value, UserRole.HOD.value]
+        and (project.department_id == current_user.department_id or project.department_id is None)
+    )
 
-    if not (is_owner or is_mentor or is_manager or is_admin or is_member):
+    if not (is_owner or is_mentor or is_manager or is_admin or is_member or is_faculty_in_dept):
         raise HTTPException(
             status_code=403,
             detail="You are not authorized to access tasks for this project",

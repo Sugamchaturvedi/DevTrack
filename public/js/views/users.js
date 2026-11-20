@@ -68,10 +68,18 @@ const UsersView = {
   },
 
   async loadUsers() {
+    const tbody = document.getElementById("users-table-body");
     try {
       this.currentUsers = await API.get("/users/");
       this.renderTable(this.currentUsers);
     } catch (e) {
+      if (tbody) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 2.5rem; color: var(--danger);">
+          <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">⚠️</div>
+          <p style="margin-bottom: 0.75rem;">Failed to load users: ${UI.escapeHtml(e.message)}</p>
+          <button class="btn btn-secondary btn-sm" onclick="UsersView.loadUsers()">🔄 Retry</button>
+        </td></tr>`;
+      }
       UI.error("Failed to load users: " + e.message);
     }
   },

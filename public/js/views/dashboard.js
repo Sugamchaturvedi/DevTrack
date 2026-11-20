@@ -213,7 +213,14 @@ const DashboardView = {
         ${activityHtml}
       `;
     } catch (e) {
-      return `<div class="card" style="color: var(--danger);">Failed to load dashboard: ${UI.escapeHtml(e.message)}</div>`;
+      return `
+        <div class="card" style="padding: 2.5rem; text-align: center; margin: 1.5rem auto; max-width: 600px; border: 1px solid var(--border-color); border-radius: var(--radius-lg);">
+          <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">⚠️</div>
+          <h3 style="margin-bottom: 0.5rem; color: var(--text-primary); font-size: 1.2rem;">Failed to Load Dashboard</h3>
+          <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem;">${UI.escapeHtml(e.message)}</p>
+          <button class="btn btn-primary" onclick="App.handleRoute()">🔄 Retry</button>
+        </div>
+      `;
     }
   },
 };

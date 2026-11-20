@@ -74,10 +74,18 @@ const ProjectsView = {
   },
 
   async loadProjects() {
+    const tbody = document.getElementById("projects-table-body");
     try {
       this.currentProjects = await API.get("/projects/");
       this.renderTable(this.currentProjects);
     } catch (e) {
+      if (tbody) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 2.5rem; color: var(--danger);">
+          <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">⚠️</div>
+          <p style="margin-bottom: 0.75rem;">Failed to load projects: ${UI.escapeHtml(e.message)}</p>
+          <button class="btn btn-secondary btn-sm" onclick="ProjectsView.loadProjects()">🔄 Retry</button>
+        </td></tr>`;
+      }
       UI.error("Failed to load projects: " + e.message);
     }
   },

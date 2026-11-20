@@ -61,6 +61,7 @@ const TimeTrackingView = {
   },
 
   async afterRender() {
+    const container = document.getElementById("timetrack-main-container");
     try {
       const projects = await API.get("/projects/");
       const select = document.getElementById("timetrack-project-select");
@@ -72,8 +73,26 @@ const TimeTrackingView = {
         select.value = this.currentProjectId;
         await this.loadProjectTasks();
         await this.loadSummary();
+      } else {
+        if (container) {
+          container.innerHTML = `
+            <div class="card" style="padding: 3rem; text-align: center; color: var(--text-muted); background: var(--bg-surface); border-radius: var(--radius-lg); border: 1px dashed var(--border-color);">
+              <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">⏱</div>
+              <h3 style="margin-bottom: 0.5rem; color: var(--text-primary);">No Projects Available</h3>
+              <p style="font-size: 0.9rem; margin-bottom: 1.25rem;">Create a project to record work logs and track development hours.</p>
+              <button class="btn btn-primary" onclick="App.navigate('projects')">+ Go to Projects Hub</button>
+            </div>
+          `;
+        }
       }
     } catch (e) {
+      if (container) {
+        container.innerHTML = `<div class="card" style="padding: 2.5rem; text-align: center; color: var(--danger);">
+          <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚠️</div>
+          <p>Failed to load Time Logs: ${UI.escapeHtml(e.message)}</p>
+          <button class="btn btn-secondary btn-sm" style="margin-top: 0.75rem;" onclick="TimeTrackingView.afterRender()">🔄 Retry</button>
+        </div>`;
+      }
       UI.error(e.message);
     }
   },

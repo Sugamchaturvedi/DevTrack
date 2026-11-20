@@ -105,6 +105,14 @@ const IssuesView = {
         `;
       }
     } catch (e) {
+      const container = document.getElementById("issues-table-container");
+      if (container) {
+        container.innerHTML = `<div class="card" style="padding: 2.5rem; text-align: center; color: var(--danger);">
+          <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚠️</div>
+          <p>Failed to load issues: ${UI.escapeHtml(e.message)}</p>
+          <button class="btn btn-secondary btn-sm" style="margin-top: 0.75rem;" onclick="IssuesView.initProjectSelector()">🔄 Retry</button>
+        </div>`;
+      }
       UI.error(e.message);
     }
   },
@@ -427,6 +435,14 @@ const IssuesView = {
 
       UI.showModal(`Issue Detail: ${issue.issue_key}`, modalHtml);
     } catch (e) {
+      const container = document.getElementById("issues-table-container");
+      if (container) {
+        container.innerHTML = `<div class="card" style="padding: 2.5rem; text-align: center; color: var(--danger);">
+          <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚠️</div>
+          <p>Failed to load issues: ${UI.escapeHtml(e.message)}</p>
+          <button class="btn btn-secondary btn-sm" style="margin-top: 0.75rem;" onclick="IssuesView.initProjectSelector()">🔄 Retry</button>
+        </div>`;
+      }
       UI.error(e.message);
     }
   },
@@ -438,6 +454,14 @@ const IssuesView = {
       await this.loadIssues();
       this.openIssueDetailModal(issueKey);
     } catch (e) {
+      const container = document.getElementById("issues-table-container");
+      if (container) {
+        container.innerHTML = `<div class="card" style="padding: 2.5rem; text-align: center; color: var(--danger);">
+          <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚠️</div>
+          <p>Failed to load issues: ${UI.escapeHtml(e.message)}</p>
+          <button class="btn btn-secondary btn-sm" style="margin-top: 0.75rem;" onclick="IssuesView.initProjectSelector()">🔄 Retry</button>
+        </div>`;
+      }
       UI.error(e.message);
     }
   },
@@ -453,6 +477,14 @@ const IssuesView = {
       UI.success("Comment added!");
       this.openIssueDetailModal(issueKey);
     } catch (e) {
+      const container = document.getElementById("issues-table-container");
+      if (container) {
+        container.innerHTML = `<div class="card" style="padding: 2.5rem; text-align: center; color: var(--danger);">
+          <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚠️</div>
+          <p>Failed to load issues: ${UI.escapeHtml(e.message)}</p>
+          <button class="btn btn-secondary btn-sm" style="margin-top: 0.75rem;" onclick="IssuesView.initProjectSelector()">🔄 Retry</button>
+        </div>`;
+      }
       UI.error(e.message);
     }
   },
@@ -611,6 +643,14 @@ const IssuesView = {
 
       UI.showModal("Create Issue", html);
     } catch (e) {
+      const container = document.getElementById("issues-table-container");
+      if (container) {
+        container.innerHTML = `<div class="card" style="padding: 2.5rem; text-align: center; color: var(--danger);">
+          <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚠️</div>
+          <p>Failed to load issues: ${UI.escapeHtml(e.message)}</p>
+          <button class="btn btn-secondary btn-sm" style="margin-top: 0.75rem;" onclick="IssuesView.initProjectSelector()">🔄 Retry</button>
+        </div>`;
+      }
       UI.error(e.message);
     }
   },

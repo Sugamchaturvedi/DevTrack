@@ -65,6 +65,14 @@ const BacklogView = {
         }
       }
     } catch (e) {
+      const container = document.getElementById("backlog-main-container");
+      if (container) {
+        container.innerHTML = `<div class="card" style="padding: 2.5rem; text-align: center; color: var(--danger);">
+          <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚠️</div>
+          <p>Failed to load Backlog: ${UI.escapeHtml(e.message)}</p>
+          <button class="btn btn-secondary btn-sm" style="margin-top: 0.75rem;" onclick="BacklogView.afterRender()">🔄 Retry</button>
+        </div>`;
+      }
       UI.error(e.message);
     }
   },
@@ -214,6 +222,14 @@ const BacklogView = {
       UI.success("Sprint assignment updated!");
       await this.loadBacklog();
     } catch (e) {
+      const container = document.getElementById("backlog-main-container");
+      if (container) {
+        container.innerHTML = `<div class="card" style="padding: 2.5rem; text-align: center; color: var(--danger);">
+          <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚠️</div>
+          <p>Failed to load Backlog: ${UI.escapeHtml(e.message)}</p>
+          <button class="btn btn-secondary btn-sm" style="margin-top: 0.75rem;" onclick="BacklogView.afterRender()">🔄 Retry</button>
+        </div>`;
+      }
       UI.error(e.message);
     }
   },
@@ -239,6 +255,14 @@ const BacklogView = {
       UI.success("Added to Product Backlog!");
       await this.loadBacklog();
     } catch (e) {
+      const container = document.getElementById("backlog-main-container");
+      if (container) {
+        container.innerHTML = `<div class="card" style="padding: 2.5rem; text-align: center; color: var(--danger);">
+          <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚠️</div>
+          <p>Failed to load Backlog: ${UI.escapeHtml(e.message)}</p>
+          <button class="btn btn-secondary btn-sm" style="margin-top: 0.75rem;" onclick="BacklogView.afterRender()">🔄 Retry</button>
+        </div>`;
+      }
       UI.error(e.message);
     }
   },
@@ -303,6 +327,14 @@ const BacklogView = {
       UI.success("Sprint is now ACTIVE!");
       await this.loadBacklog();
     } catch (e) {
+      const container = document.getElementById("backlog-main-container");
+      if (container) {
+        container.innerHTML = `<div class="card" style="padding: 2.5rem; text-align: center; color: var(--danger);">
+          <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚠️</div>
+          <p>Failed to load Backlog: ${UI.escapeHtml(e.message)}</p>
+          <button class="btn btn-secondary btn-sm" style="margin-top: 0.75rem;" onclick="BacklogView.afterRender()">🔄 Retry</button>
+        </div>`;
+      }
       UI.error(e.message);
     }
   },
@@ -316,6 +348,14 @@ const BacklogView = {
       UI.success("Sprint COMPLETED!");
       await this.loadBacklog();
     } catch (e) {
+      const container = document.getElementById("backlog-main-container");
+      if (container) {
+        container.innerHTML = `<div class="card" style="padding: 2.5rem; text-align: center; color: var(--danger);">
+          <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚠️</div>
+          <p>Failed to load Backlog: ${UI.escapeHtml(e.message)}</p>
+          <button class="btn btn-secondary btn-sm" style="margin-top: 0.75rem;" onclick="BacklogView.afterRender()">🔄 Retry</button>
+        </div>`;
+      }
       UI.error(e.message);
     }
   },

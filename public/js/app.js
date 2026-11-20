@@ -4,6 +4,8 @@
  */
 
 const App = {
+  currentRouteId: 0,
+
   async init() {
     UI.initTheme();
     this.initSidebarState();
@@ -25,9 +27,9 @@ const App = {
       window.location.hash = "#/login";
     } else if (!window.location.hash || window.location.hash === "#/login") {
       window.location.hash = "#/dashboard";
+    } else {
+      this.handleRoute();
     }
-
-    this.handleRoute();
   },
 
   navigate(route) {
@@ -37,6 +39,7 @@ const App = {
   },
 
   async handleRoute() {
+    const routeId = ++this.currentRouteId;
     const hash = window.location.hash || "#/dashboard";
     const appContainer = document.getElementById("app");
     if (!appContainer) return;
@@ -70,76 +73,117 @@ const App = {
 
     this.updateActiveSidebar(hash);
 
-    // Route Matching
-    if (hash === "#/dashboard") {
-      contentOutlet.innerHTML = await DashboardView.render();
-      if (DashboardView.afterRender) await DashboardView.afterRender();
-    } else if (hash === "#/projects") {
-      contentOutlet.innerHTML = await ProjectsView.render();
-      if (ProjectsView.afterRender) await ProjectsView.afterRender();
-    } else if (hash.startsWith("#/projects/")) {
-      const projectId = parseInt(hash.replace("#/projects/", ""));
-      contentOutlet.innerHTML = await ProjectDetailView.render(projectId);
-      if (ProjectDetailView.afterRender) await ProjectDetailView.afterRender();
-    } else if (hash === "#/issues") {
-      contentOutlet.innerHTML = await IssuesView.render();
-      if (IssuesView.afterRender) await IssuesView.afterRender();
-    } else if (hash === "#/backlog") {
-      contentOutlet.innerHTML = await BacklogView.render();
-      if (BacklogView.afterRender) await BacklogView.afterRender();
-    } else if (hash === "#/kanban") {
-      contentOutlet.innerHTML = await KanbanView.render();
-      if (KanbanView.afterRender) await KanbanView.afterRender();
-    } else if (hash === "#/sprints") {
-      contentOutlet.innerHTML = await SprintsView.render();
-      if (SprintsView.afterRender) await SprintsView.afterRender();
-    } else if (hash === "#/roadmap") {
-      contentOutlet.innerHTML = await RoadmapView.render();
-      if (RoadmapView.afterRender) await RoadmapView.afterRender();
-    } else if (hash === "#/workload") {
-      contentOutlet.innerHTML = await WorkloadView.render();
-      if (WorkloadView.afterRender) await WorkloadView.afterRender();
-    } else if (hash === "#/timetracking") {
-      contentOutlet.innerHTML = await TimeTrackingView.render();
-      if (TimeTrackingView.afterRender) await TimeTrackingView.afterRender();
-    } else if (hash === "#/risks") {
-      contentOutlet.innerHTML = await RisksView.render();
-      if (RisksView.afterRender) await RisksView.afterRender();
-    } else if (hash === "#/wiki") {
-      contentOutlet.innerHTML = await WikiView.render();
-      if (WikiView.afterRender) await WikiView.afterRender();
-    } else if (hash === "#/automations") {
-      contentOutlet.innerHTML = await AutomationsView.render();
-      if (AutomationsView.afterRender) await AutomationsView.afterRender();
-    } else if (hash === "#/workflows") {
-      contentOutlet.innerHTML = await WorkflowsView.render();
-      if (WorkflowsView.afterRender) await WorkflowsView.afterRender();
-    } else if (hash === "#/templates") {
-      contentOutlet.innerHTML = await TemplatesView.render();
-      if (TemplatesView.afterRender) await TemplatesView.afterRender();
-    } else if (hash === "#/reports") {
-      contentOutlet.innerHTML = await ReportsView.render();
-      if (ReportsView.afterRender) await ReportsView.afterRender();
-    } else if (hash === "#/submissions") {
-      contentOutlet.innerHTML = await SubmissionsView.render();
-      if (SubmissionsView.afterRender) await SubmissionsView.afterRender();
-    } else if (hash === "#/university") {
-      contentOutlet.innerHTML = await UniversityView.render();
-      if (UniversityView.afterRender) await UniversityView.afterRender();
-    } else if (hash === "#/users") {
-      contentOutlet.innerHTML = await UsersView.render();
-      if (UsersView.afterRender) await UsersView.afterRender();
-    } else if (hash === "#/announcements") {
-      contentOutlet.innerHTML = await AnnouncementsView.render();
-      if (AnnouncementsView.afterRender) await AnnouncementsView.afterRender();
-    } else if (hash === "#/library") {
-      contentOutlet.innerHTML = await LibraryView.render();
-      if (LibraryView.afterRender) await LibraryView.afterRender();
-    } else if (hash === "#/profile") {
-      contentOutlet.innerHTML = await ProfileView.render();
-      if (ProfileView.afterRender) await ProfileView.afterRender();
-    } else {
-      contentOutlet.innerHTML = `<div class="card">Page not found. <a href="#/dashboard">Return to Dashboard</a></div>`;
+    // Initial clean loading state while view prepares
+    contentOutlet.innerHTML = `
+      <div class="view-loading-state" style="padding: 3.5rem 1rem; text-align: center; color: var(--text-muted);">
+        <div style="display: inline-block; width: 38px; height: 38px; border: 3px solid var(--border-color); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 1rem;"></div>
+        <p style="font-size: 0.95rem; font-weight: 500;">Loading content...</p>
+      </div>
+    `;
+
+    try {
+      let viewHtml = "";
+      let afterRenderFn = null;
+
+      // Route Matching
+      if (hash === "#/dashboard") {
+        viewHtml = await DashboardView.render();
+        afterRenderFn = DashboardView.afterRender ? () => DashboardView.afterRender() : null;
+      } else if (hash === "#/projects") {
+        viewHtml = await ProjectsView.render();
+        afterRenderFn = ProjectsView.afterRender ? () => ProjectsView.afterRender() : null;
+      } else if (hash.startsWith("#/projects/")) {
+        const projectId = parseInt(hash.replace("#/projects/", ""));
+        viewHtml = await ProjectDetailView.render(projectId);
+        afterRenderFn = ProjectDetailView.afterRender ? () => ProjectDetailView.afterRender() : null;
+      } else if (hash === "#/issues") {
+        viewHtml = await IssuesView.render();
+        afterRenderFn = IssuesView.afterRender ? () => IssuesView.afterRender() : null;
+      } else if (hash === "#/backlog") {
+        viewHtml = await BacklogView.render();
+        afterRenderFn = BacklogView.afterRender ? () => BacklogView.afterRender() : null;
+      } else if (hash === "#/kanban") {
+        viewHtml = await KanbanView.render();
+        afterRenderFn = KanbanView.afterRender ? () => KanbanView.afterRender() : null;
+      } else if (hash === "#/sprints") {
+        viewHtml = await SprintsView.render();
+        afterRenderFn = SprintsView.afterRender ? () => SprintsView.afterRender() : null;
+      } else if (hash === "#/roadmap") {
+        viewHtml = await RoadmapView.render();
+        afterRenderFn = RoadmapView.afterRender ? () => RoadmapView.afterRender() : null;
+      } else if (hash === "#/workload") {
+        viewHtml = await WorkloadView.render();
+        afterRenderFn = WorkloadView.afterRender ? () => WorkloadView.afterRender() : null;
+      } else if (hash === "#/timetracking") {
+        viewHtml = await TimeTrackingView.render();
+        afterRenderFn = TimeTrackingView.afterRender ? () => TimeTrackingView.afterRender() : null;
+      } else if (hash === "#/risks") {
+        viewHtml = await RisksView.render();
+        afterRenderFn = RisksView.afterRender ? () => RisksView.afterRender() : null;
+      } else if (hash === "#/wiki") {
+        viewHtml = await WikiView.render();
+        afterRenderFn = WikiView.afterRender ? () => WikiView.afterRender() : null;
+      } else if (hash === "#/automations") {
+        viewHtml = await AutomationsView.render();
+        afterRenderFn = AutomationsView.afterRender ? () => AutomationsView.afterRender() : null;
+      } else if (hash === "#/workflows") {
+        viewHtml = await WorkflowsView.render();
+        afterRenderFn = WorkflowsView.afterRender ? () => WorkflowsView.afterRender() : null;
+      } else if (hash === "#/templates") {
+        viewHtml = await TemplatesView.render();
+        afterRenderFn = TemplatesView.afterRender ? () => TemplatesView.afterRender() : null;
+      } else if (hash === "#/reports") {
+        viewHtml = await ReportsView.render();
+        afterRenderFn = ReportsView.afterRender ? () => ReportsView.afterRender() : null;
+      } else if (hash === "#/submissions") {
+        viewHtml = await SubmissionsView.render();
+        afterRenderFn = SubmissionsView.afterRender ? () => SubmissionsView.afterRender() : null;
+      } else if (hash === "#/university") {
+        viewHtml = await UniversityView.render();
+        afterRenderFn = UniversityView.afterRender ? () => UniversityView.afterRender() : null;
+      } else if (hash === "#/users") {
+        viewHtml = await UsersView.render();
+        afterRenderFn = UsersView.afterRender ? () => UsersView.afterRender() : null;
+      } else if (hash === "#/announcements") {
+        viewHtml = await AnnouncementsView.render();
+        afterRenderFn = AnnouncementsView.afterRender ? () => AnnouncementsView.afterRender() : null;
+      } else if (hash === "#/library") {
+        viewHtml = await LibraryView.render();
+        afterRenderFn = LibraryView.afterRender ? () => LibraryView.afterRender() : null;
+      } else if (hash === "#/profile") {
+        viewHtml = await ProfileView.render();
+        afterRenderFn = ProfileView.afterRender ? () => ProfileView.afterRender() : null;
+      } else {
+        viewHtml = `<div class="card" style="padding: 2.5rem; text-align: center;">
+          <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔍</div>
+          <h3>Page Not Found</h3>
+          <p style="color: var(--text-muted); margin-bottom: 1rem;">The requested route does not exist.</p>
+          <a class="btn btn-primary" href="#/dashboard">Return to Dashboard</a>
+        </div>`;
+      }
+
+      // Concurrency check: discard stale route render
+      if (this.currentRouteId !== routeId) return;
+
+      contentOutlet.innerHTML = viewHtml;
+
+      if (afterRenderFn) {
+        await afterRenderFn();
+      }
+    } catch (err) {
+      if (this.currentRouteId !== routeId) return;
+      console.error("View rendering error:", err);
+      contentOutlet.innerHTML = `
+        <div class="card" style="padding: 2.5rem; text-align: center; margin: 1.5rem auto; max-width: 580px; border: 1px solid var(--border-color); border-radius: var(--radius-lg);">
+          <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">⚠️</div>
+          <h3 style="margin-bottom: 0.5rem; color: var(--text-primary); font-size: 1.2rem;">Failed to Load View</h3>
+          <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.5;">${UI.escapeHtml(err.message || 'An unexpected error occurred while loading this page.')}</p>
+          <div style="display: flex; gap: 0.75rem; justify-content: center;">
+            <button class="btn btn-primary" onclick="App.handleRoute()">🔄 Retry</button>
+            <button class="btn btn-secondary" onclick="window.location.hash='#/dashboard'">Go to Dashboard</button>
+          </div>
+        </div>
+      `;
     }
   },
 

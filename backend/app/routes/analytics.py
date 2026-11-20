@@ -67,7 +67,7 @@ def get_dashboard_metrics(
                 "entity_type": l.entity_type,
                 "action": l.action,
                 "details": l.details,
-                "timestamp": l.timestamp,
+                "timestamp": l.timestamp.isoformat() if l.timestamp else None,
             }
             for l in recent_logs
         ]

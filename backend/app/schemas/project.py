@@ -87,14 +87,14 @@ class ProjectMilestoneSchema(BaseModel):
 
 class ProjectResponse(ProjectBase):
     id: int
-    owner_id: int
+    owner_id: Optional[int] = None
     owner_name: Optional[str] = None
     department_name: Optional[str] = None
     faculty_mentor_name: Optional[str] = None
     project_manager_name: Optional[str] = None
     task_count: Optional[int] = 0
     completed_task_count: Optional[int] = 0
-    created_at: datetime
-    updated_at: datetime
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 
     model_config = ConfigDict(from_attributes=True)

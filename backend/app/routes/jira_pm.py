@@ -68,8 +68,12 @@ def _check_project_access(project_id: int, current_user: User, db: Session) -> P
         ProjectMember.project_id == project_id,
         ProjectMember.user_id == current_user.id,
     ).first() is not None
+    is_faculty_in_dept = (
+        current_user.role in [UserRole.FACULTY.value, UserRole.REVIEWER.value, UserRole.HOD.value]
+        and (project.department_id == current_user.department_id or project.department_id is None)
+    )
 
-    if not (is_owner or is_mentor or is_manager or is_admin or is_member):
+    if not (is_owner or is_mentor or is_manager or is_admin or is_member or is_faculty_in_dept):
         raise HTTPException(status_code=403, detail="Unauthorized access to this project")
 
     return project
