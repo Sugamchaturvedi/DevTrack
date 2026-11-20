@@ -1,4 +1,4 @@
-/**
+﻿/**
  * DevTrack Visual Project Roadmap & Timeline Module
  * Epics as Timeline Bars, Milestones, Progress Tracking, and Zoom Modes
  */
@@ -36,7 +36,7 @@ const RoadmapView = {
 
   async afterRender() {
     try {
-      const projects = await API.get("/projects/");
+      const projects = await App.getProjects();
       const select = document.getElementById("roadmap-project-select");
       if (!select) return;
 
@@ -179,3 +179,4 @@ const RoadmapView = {
 };
 
 window.RoadmapView = RoadmapView;
+

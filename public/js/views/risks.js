@@ -1,4 +1,4 @@
-/**
+﻿/**
  * DevTrack Project Risk Management Module
  * Risk Matrix (Probability vs Impact), Risk Register, and Mitigation Tracking
  */
@@ -37,7 +37,7 @@ const RisksView = {
   async afterRender() {
     const container = document.getElementById("risks-main-container");
     try {
-      const projects = await API.get("/projects/");
+      const projects = await App.getProjects();
       const select = document.getElementById("risk-project-select");
       if (!select) return;
 
@@ -244,3 +244,4 @@ const RisksView = {
 };
 
 window.RisksView = RisksView;
+

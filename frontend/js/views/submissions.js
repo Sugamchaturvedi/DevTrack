@@ -1,4 +1,4 @@
-/**
+﻿/**
  * DevTrack Academic Submissions & Evaluations View
  * Student Document Deliverables, Faculty Evaluation & Rubric Grading
  */
@@ -33,7 +33,7 @@ const SubmissionsView = {
   async afterRender() {
     const container = document.getElementById("submissions-main-container");
     try {
-      const projects = await API.get("/projects/");
+      const projects = await App.getProjects();
       const select = document.getElementById("sub-project-select");
       if (!select) return;
 
@@ -296,3 +296,4 @@ const SubmissionsView = {
 };
 
 window.SubmissionsView = SubmissionsView;
+

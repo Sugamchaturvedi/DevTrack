@@ -1,4 +1,4 @@
-/**
+﻿/**
  * DevTrack Projects List & Management View
  */
 
@@ -76,7 +76,7 @@ const ProjectsView = {
   async loadProjects() {
     const tbody = document.getElementById("projects-table-body");
     try {
-      this.currentProjects = await API.get("/projects/");
+      this.currentProjects = await App.getProjects();
       this.renderTable(this.currentProjects);
     } catch (e) {
       if (tbody) {
@@ -237,3 +237,4 @@ const ProjectsView = {
 };
 
 window.ProjectsView = ProjectsView;
+

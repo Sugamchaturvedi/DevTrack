@@ -1,4 +1,4 @@
-/**
+﻿/**
  * DevTrack Project Automation Engine View
  * Configurable Trigger-Condition-Action automation rules and execution audit logs
  */
@@ -37,7 +37,7 @@ const AutomationsView = {
   async afterRender() {
     const container = document.getElementById("automations-main-container");
     try {
-      const projects = await API.get("/projects/");
+      const projects = await App.getProjects();
       const select = document.getElementById("auto-project-select");
       if (!select) return;
 
@@ -199,3 +199,4 @@ const AutomationsView = {
 };
 
 window.AutomationsView = AutomationsView;
+

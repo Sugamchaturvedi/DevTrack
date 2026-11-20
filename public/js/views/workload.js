@@ -1,4 +1,4 @@
-/**
+﻿/**
  * DevTrack Workload & Team Capacity Management View
  * Resource allocation, capacity planning, estimated vs logged hours, and overloaded indicators
  */
@@ -35,7 +35,7 @@ const WorkloadView = {
 
   async afterRender() {
     try {
-      const projects = await API.get("/projects/");
+      const projects = await App.getProjects();
       const select = document.getElementById("workload-project-select");
       if (!select) return;
 
@@ -158,3 +158,4 @@ const WorkloadView = {
 };
 
 window.WorkloadView = WorkloadView;
+

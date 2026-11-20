@@ -1,4 +1,4 @@
-/**
+﻿/**
  * DevTrack Advanced Backlog Management View
  * Sprint Planning, Product Backlog, Drag & Drop Reordering, Story Points, and Epic Grouping
  */
@@ -42,7 +42,7 @@ const BacklogView = {
 
   async afterRender() {
     try {
-      const projects = await API.get("/projects/");
+      const projects = await App.getProjects();
       const select = document.getElementById("backlog-project-select");
       if (!select) return;
 
@@ -362,3 +362,4 @@ const BacklogView = {
 };
 
 window.BacklogView = BacklogView;
+

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * DevTrack Advanced Project Analytics & Reports Module
  * Sprint Burndown Chart (Vanilla SVG), Team Velocity Chart, and CSV/JSON Export
  */
@@ -37,7 +37,7 @@ const ReportsView = {
   async afterRender() {
     const container = document.getElementById("reports-main-container");
     try {
-      const projects = await API.get("/projects/");
+      const projects = await App.getProjects();
       const select = document.getElementById("reports-project-select");
       if (!select) return;
 
@@ -246,3 +246,4 @@ const ReportsView = {
 };
 
 window.ReportsView = ReportsView;
+

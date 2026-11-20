@@ -1,4 +1,4 @@
-/**
+﻿/**
  * DevTrack Time Tracking & Work Logs Module
  * Effort estimation vs actual hours, interactive task timer, manual time logging, and breakdown
  */
@@ -63,7 +63,7 @@ const TimeTrackingView = {
   async afterRender() {
     const container = document.getElementById("timetrack-main-container");
     try {
-      const projects = await API.get("/projects/");
+      const projects = await App.getProjects();
       const select = document.getElementById("timetrack-project-select");
       if (!select) return;
 
@@ -248,3 +248,4 @@ const TimeTrackingView = {
 };
 
 window.TimeTrackingView = TimeTrackingView;
+

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * DevTrack Advanced Jira-Inspired Kanban Board View
  * Customizable Columns, WIP Limits, Story Points, Issue Key Badges, Drag & Drop, and Filters
  */
@@ -67,7 +67,7 @@ const KanbanView = {
 
   async initProjectSelector() {
     try {
-      const projects = await API.get("/projects/");
+      const projects = await App.getProjects();
       const select = document.getElementById("kanban-project-select");
       if (!select) return;
 
@@ -275,3 +275,4 @@ const KanbanView = {
 };
 
 window.KanbanView = KanbanView;
+

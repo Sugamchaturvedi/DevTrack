@@ -1,4 +1,4 @@
-/**
+﻿/**
  * DevTrack Jira-Inspired Issue Tracking System
  * Full Issue Registry, Filtering, Search by Key (DEV-1001), and Rich Issue Detail Modal
  */
@@ -88,7 +88,7 @@ const IssuesView = {
 
   async initProjectSelector() {
     try {
-      const projects = await API.get("/projects/");
+      const projects = await App.getProjects();
       const select = document.getElementById("issue-project-select");
       if (!select) return;
 
@@ -688,3 +688,4 @@ const IssuesView = {
 };
 
 window.IssuesView = IssuesView;
+

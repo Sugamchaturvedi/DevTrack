@@ -1,4 +1,4 @@
-/**
+﻿/**
  * DevTrack Project Wiki & Knowledge Base Module
  * Architecture specifications, setup guides, research notes, and meeting records
  */
@@ -38,7 +38,7 @@ const WikiView = {
   async afterRender() {
     const container = document.getElementById("wiki-main-container");
     try {
-      const projects = await API.get("/projects/");
+      const projects = await App.getProjects();
       const select = document.getElementById("wiki-project-select");
       if (!select) return;
 
@@ -207,3 +207,4 @@ const WikiView = {
 };
 
 window.WikiView = WikiView;
+

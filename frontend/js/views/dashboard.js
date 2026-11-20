@@ -4,12 +4,25 @@
  */
 
 const DashboardView = {
+  cachedData: null,
+  cacheTime: 0,
+
+  async getDashboardData(forceRefresh = false) {
+    const now = Date.now();
+    if (!forceRefresh && this.cachedData && (now - this.cacheTime < 30000)) {
+      return this.cachedData;
+    }
+    this.cachedData = await API.get("/analytics/dashboard");
+    this.cacheTime = now;
+    return this.cachedData;
+  },
+
   async render() {
     const user = Auth.getUser();
     if (!user) return "";
 
     try {
-      const data = await API.get("/analytics/dashboard");
+      const data = await this.getDashboardData();
       const m = data.metrics || {};
       const role = data.role;
 

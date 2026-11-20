@@ -1,4 +1,4 @@
-/**
+﻿/**
  * DevTrack Agile & Sprints View
  * Sprint Planning, Product Backlog, and Burndown Velocity Chart
  */
@@ -33,7 +33,7 @@ const SprintsView = {
   async afterRender() {
     const container = document.getElementById("sprints-main-container");
     try {
-      const projects = await API.get("/projects/");
+      const projects = await App.getProjects();
       const select = document.getElementById("sprint-project-select");
       if (!select) return;
 
@@ -290,3 +290,4 @@ const SprintsView = {
 };
 
 window.SprintsView = SprintsView;
+
