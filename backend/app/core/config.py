@@ -14,6 +14,11 @@ class Settings(BaseSettings):
     upload_dir: str = "uploads"
     max_upload_size_mb: int = 25
 
+    # GitHub & External Integration Configuration (Phase 1)
+    github_api_base: str = "https://api.github.com"
+    github_webhook_secret: str = ""
+    encryption_key: str = ""
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

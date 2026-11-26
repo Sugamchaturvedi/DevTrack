@@ -58,7 +58,10 @@ const API = {
         if (!window.location.hash.includes("login") && !window.location.hash.includes("register")) {
           window.location.hash = "#/login";
         }
-        throw new Error("Session expired. Please log in again.");
+        const authErr = new Error("Session expired. Please log in again.");
+        authErr.status = 401;
+        authErr.endpoint = endpoint;
+        throw authErr;
       }
 
       if (response.status === 204) {
@@ -74,7 +77,7 @@ const API = {
       }
 
       if (!response.ok) {
-        let msg = "Request failed";
+        let msg = `Request failed (${response.status})`;
         if (typeof data.detail === "string") {
           msg = data.detail;
         } else if (Array.isArray(data.detail)) {
@@ -82,18 +85,70 @@ const API = {
         } else if (data.message) {
           msg = data.message;
         }
-        throw new Error(msg);
+        const httpErr = new Error(msg);
+        httpErr.status = response.status;
+        httpErr.endpoint = endpoint;
+        throw httpErr;
       }
 
       return data;
     } catch (err) {
       clearTimeout(timeoutId);
       if (err.name === "AbortError") {
-        throw new Error(`Request timed out on ${endpoint}`);
+        const timeoutErr = new Error(`Request timed out on ${endpoint}`);
+        timeoutErr.status = 408;
+        timeoutErr.endpoint = endpoint;
+        throw timeoutErr;
+      }
+      if (err.status === undefined) {
+        err.status = 0;
+        err.isNetworkError = true;
+        err.endpoint = endpoint;
       }
       console.error(`API Error on ${endpoint}:`, err);
       throw err;
     }
+  },
+
+  formatErrorHtml(err, title = "Failed to load data", retryFnCall = "") {
+    const status = err && typeof err.status === "number" ? err.status : 0;
+    let badgeText = "ERROR";
+    let hint = err && err.message ? err.message : "An unexpected error occurred.";
+
+    if (status === 401) {
+      badgeText = "401 UNAUTHORIZED";
+      hint = `${hint} Please sign in again to refresh your session.`;
+    } else if (status === 403) {
+      badgeText = "403 ACCESS DENIED";
+      hint = `${hint} You do not have permission to access this project's resources.`;
+    } else if (status === 404) {
+      badgeText = "404 NOT FOUND";
+      hint = `API endpoint or resource not found (${err.endpoint || ""}). Verify the backend server is up to date and running.`;
+    } else if (status >= 500) {
+      badgeText = `${status} SERVER ERROR`;
+      hint = `${hint} Please check the FastAPI backend logs and PostgreSQL connection.`;
+    } else if (status === 408) {
+      badgeText = "408 TIMEOUT";
+    } else if (status === 0 || (err && err.isNetworkError)) {
+      badgeText = "NETWORK ERROR";
+      hint = `Unable to reach the backend server at ${API_BASE}. Ensure the FastAPI service is running.`;
+    }
+
+    const esc = (s) => (window.UI ? UI.escapeHtml(s) : String(s || ""));
+    return `
+      <div class="card" style="padding: 2rem; text-align: center; border: 1px solid var(--border-color);">
+        <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚠️</div>
+        <div style="margin-bottom: 0.5rem;">
+          <span class="badge badge-danger">${esc(badgeText)}</span>
+        </div>
+        <h3 style="margin: 0 0 0.4rem 0; font-size: 1.05rem; color: var(--text-primary);">${esc(title)}</h3>
+        <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0 auto 1.25rem auto; max-width: 540px;">${esc(hint)}</p>
+        <div style="display: flex; gap: 0.65rem; justify-content: center; flex-wrap: wrap;">
+          ${retryFnCall ? `<button class="btn btn-primary btn-sm" onclick="${retryFnCall}">🔄 Retry</button>` : ""}
+          ${status === 401 ? `<button class="btn btn-secondary btn-sm" onclick="window.location.hash='#/login'">🔑 Sign In</button>` : ""}
+        </div>
+      </div>
+    `;
   },
 
   get(endpoint, params = {}) {

@@ -13,8 +13,11 @@ from app.routes import (
     analytics,
     auth,
     collaboration,
+    devops,
+    github,
     jira_pm,
     projects,
+    qa,
     submissions,
     tasks,
     university,
@@ -52,6 +55,9 @@ app.include_router(jira_pm.router)
 app.include_router(submissions.router)
 app.include_router(collaboration.router)
 app.include_router(analytics.router)
+app.include_router(github.router)
+app.include_router(devops.router)
+app.include_router(qa.router)
 
 # Mount Uploads directory
 upload_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", settings.upload_dir))

@@ -149,6 +149,15 @@ const App = {
       } else if (hash === "#/automations") {
         viewHtml = await AutomationsView.render();
         afterRenderFn = AutomationsView.afterRender ? () => AutomationsView.afterRender() : null;
+      } else if (hash === "#/github") {
+        viewHtml = await GitHubView.render();
+        afterRenderFn = GitHubView.afterRender ? () => GitHubView.afterRender() : null;
+      } else if (hash === "#/devops") {
+        viewHtml = await DevOpsView.render();
+        afterRenderFn = DevOpsView.afterRender ? () => DevOpsView.afterRender() : null;
+      } else if (hash === "#/qa") {
+        viewHtml = await QAView.render();
+        afterRenderFn = QAView.afterRender ? () => QAView.afterRender() : null;
       } else if (hash === "#/workflows") {
         viewHtml = await WorkflowsView.render();
         afterRenderFn = WorkflowsView.afterRender ? () => WorkflowsView.afterRender() : null;
@@ -283,6 +292,17 @@ const App = {
           </div>
           <div class="nav-item" onclick="window.location.hash='#/automations'" data-route="#/automations">
             <span class="icon">⚡</span> <span class="nav-text">Automation</span>
+          </div>
+
+          <div class="nav-section-title">ENGINEERING & QA</div>
+          <div class="nav-item" onclick="window.location.hash='#/github'" data-route="#/github">
+            <span class="icon">🐙</span> <span class="nav-text">GitHub Repos</span>
+          </div>
+          <div class="nav-item" onclick="window.location.hash='#/devops'" data-route="#/devops">
+            <span class="icon">🚀</span> <span class="nav-text">CI/CD & Releases</span>
+          </div>
+          <div class="nav-item" onclick="window.location.hash='#/qa'" data-route="#/qa">
+            <span class="icon">🧪</span> <span class="nav-text">Test Management</span>
           </div>
 
           <div class="nav-section-title">ADMINISTRATION</div>

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * DevTrack Jira-Inspired Issue Tracking System
  * Full Issue Registry, Filtering, Search by Key (DEV-1001), and Rich Issue Detail Modal
  */
@@ -362,6 +362,68 @@ const IssuesView = {
                     `).join("")}
                   </div>
                 ` : ""}
+              </div>
+
+              <!-- GitHub Development & Code Review -->
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                  <h4 style="font-size: 0.9rem; font-weight: 700;">🐙 GitHub Code & Review Status</h4>
+                  ${(() => {
+                    const rev = (issue.github && issue.github.code_review_status) || "none";
+                    const cls = rev === "approved" ? "badge-success" : (rev === "changes_requested" ? "badge-danger" : (rev === "pending" ? "badge-warning" : "badge-neutral"));
+                    return `<span class="badge ${cls}">Review: ${UI.escapeHtml(rev.replace("_", " ").toUpperCase())}</span>`;
+                  })()}
+                </div>
+                ${(() => {
+                  const gh = issue.github || { branches: [], commits: [], pull_requests: [] };
+                  const hasAny = (gh.branches.length + gh.commits.length + gh.pull_requests.length) > 0;
+                  if (!hasAny) {
+                    return `<div style="font-size: 0.8rem; color: var(--text-muted);">No branches, commits, or PRs linked yet. Reference <code>${UI.escapeHtml(issue.issue_key)}</code> in Git commits or PR titles.</div>`;
+                  }
+                  return `
+                    <div style="display: flex; flex-direction: column; gap: 0.45rem; font-size: 0.8rem;">
+                      ${gh.branches.map(b => `
+                        <div style="padding: 0.35rem 0.6rem; background: var(--bg-surface-hover); border-radius: 4px;">
+                          🌿 Branch: <code>${UI.escapeHtml(b.name)}</code> ${b.repo_name ? `<span style="color: var(--text-muted);">(${UI.escapeHtml(b.repo_name)})</span>` : ""}
+                        </div>
+                      `).join("")}
+                      ${gh.pull_requests.map(pr => `
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0.6rem; background: var(--bg-surface-hover); border-radius: 4px; gap: 0.5rem;">
+                          <div>
+                            🔀 <strong>PR #${pr.pr_number}</strong>: ${pr.html_url ? `<a href="${UI.escapeHtml(pr.html_url)}" target="_blank" rel="noopener">${UI.escapeHtml(pr.title)}</a>` : UI.escapeHtml(pr.title)}
+                          </div>
+                          <div style="display: flex; gap: 0.3rem;">
+                            <span class="badge badge-info">${UI.escapeHtml(pr.state)}</span>
+                            <span class="badge ${pr.review_status === 'approved' ? 'badge-success' : (pr.review_status === 'changes_requested' ? 'badge-danger' : 'badge-warning')}">${UI.escapeHtml(pr.review_status)}</span>
+                          </div>
+                        </div>
+                      `).join("")}
+                      ${gh.commits.slice(0, 4).map(c => `
+                        <div style="padding: 0.35rem 0.6rem; background: var(--bg-surface-hover); border-radius: 4px;">
+                          📝 <code>${UI.escapeHtml(c.sha)}</code> ${UI.escapeHtml((c.message || "").split("\n")[0])} <span style="color: var(--text-muted);">— ${UI.escapeHtml(c.author_name || "")}</span>
+                        </div>
+                      `).join("")}
+                    </div>
+                  `;
+                })()}
+              </div>
+
+              <!-- Linked QA Test Cases -->
+              <div>
+                <h4 style="font-size: 0.9rem; font-weight: 700; margin-bottom: 0.5rem;">🧪 Linked Test Cases (${issue.test_cases ? issue.test_cases.length : 0})</h4>
+                ${(!issue.test_cases || issue.test_cases.length === 0) ? `<div style="font-size: 0.8rem; color: var(--text-muted);">No QA test cases linked to this issue.</div>` : `
+                  <div style="display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.8rem;">
+                    ${issue.test_cases.map(tc => {
+                      const cls = tc.latest_status === "pass" ? "badge-success" : (tc.latest_status === "fail" ? "badge-danger" : (tc.latest_status === "blocked" ? "badge-warning" : "badge-neutral"));
+                      return `
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0.6rem; background: var(--bg-surface-hover); border-radius: 4px;">
+                          <span><code>${UI.escapeHtml(tc.case_key)}</code> ${UI.escapeHtml(tc.title)}</span>
+                          <span class="badge ${cls}">${UI.escapeHtml((tc.latest_status || "not_run").toUpperCase())}</span>
+                        </div>
+                      `;
+                    }).join("")}
+                  </div>
+                `}
               </div>
 
               <!-- Comments & Activity -->

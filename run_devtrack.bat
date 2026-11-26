@@ -72,7 +72,7 @@ echo     * Student:        student.priya@devtrack.edu
 echo =====================================================================
 echo.
 
-backend\venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --app-dir backend --env-file backend\.env
+backend\venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --app-dir backend --env-file backend\.env --reload
 goto done
 
 :server_already_running

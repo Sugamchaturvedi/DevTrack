@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from app.models.project import Project, ProjectMember
 from app.schemas.project import ProjectCreate, ProjectUpdate
@@ -9,9 +10,14 @@ def create_project(
     project_data: ProjectCreate,
     owner_id: int,
 ):
-    # Auto-generate unique code if not provided
-    project_count = db.query(Project).count()
-    code = project_data.code or f"PRJ-{project_count + 1:04d}"
+    # Auto-generate unique code safely even after deletions
+    code = project_data.code
+    if not code:
+        max_id = db.query(func.max(Project.id)).scalar() or 0
+        candidate_num = max(db.query(Project).count(), max_id) + 1
+        while db.query(Project).filter(Project.code == f"PRJ-{candidate_num:04d}").first() is not None:
+            candidate_num += 1
+        code = f"PRJ-{candidate_num:04d}"
 
     project = Project(
         name=project_data.name,

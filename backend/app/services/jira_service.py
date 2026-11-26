@@ -73,6 +73,11 @@ def get_issue_by_key_or_id(db: Session, key_or_id: str) -> Optional[Dict[str, An
 
     comments_count = db.query(TaskComment).filter(TaskComment.task_id == task.id).count()
 
+    from app.services.github_service import get_issue_github_summary
+    from app.services.qa_service import get_issue_qa_summary
+    github_summary = get_issue_github_summary(db, task.id)
+    qa_cases = get_issue_qa_summary(db, task.id)
+
     return {
         "id": task.id,
         "issue_key": task.issue_key or f"DEV-{1000 + task.id}",
@@ -103,6 +108,8 @@ def get_issue_by_key_or_id(db: Session, key_or_id: str) -> Optional[Dict[str, An
         "dependencies": deps_data,
         "comments_count": comments_count,
         "work_logs": logs_data,
+        "github": github_summary,
+        "test_cases": qa_cases,
         "created_at": task.created_at,
         "updated_at": task.updated_at,
     }

@@ -33,6 +33,22 @@ from app.models.jira_pm import (
     SavedFilter,
     ProjectTemplate,
 )
+from app.models.devops_qa import (
+    GitHubConnection,
+    GitHubRepository,
+    GitHubBranch,
+    GitHubCommit,
+    GitHubPullRequest,
+    GitHubActivity,
+    DeploymentEnvironment,
+    PipelineRun,
+    Release,
+    DeploymentHistory,
+    TestPlan,
+    TestCase,
+    TestRun,
+    TestExecution,
+)
 
 __all__ = [
     "User",
@@ -74,4 +90,18 @@ __all__ = [
     "WikiPage",
     "SavedFilter",
     "ProjectTemplate",
+    "GitHubConnection",
+    "GitHubRepository",
+    "GitHubBranch",
+    "GitHubCommit",
+    "GitHubPullRequest",
+    "GitHubActivity",
+    "DeploymentEnvironment",
+    "PipelineRun",
+    "Release",
+    "DeploymentHistory",
+    "TestPlan",
+    "TestCase",
+    "TestRun",
+    "TestExecution",
 ]
